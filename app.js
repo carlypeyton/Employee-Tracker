@@ -66,3 +66,14 @@ function promptUser() {
         };
     });
 };
+
+//View All Employees (Include Employee Info Including Title, Salary, Manager, Department)
+const viewEmployees = () => {
+    const query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, role.title AS Title, role.salary AS Salary, department.name AS Department, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id LEFT JOIN employee e on employee.manager_id = e.id";
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        promptUser();
+    });
+};
+
