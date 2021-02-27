@@ -8,7 +8,7 @@ const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: "Leelanau1993!",
+    password: "",
     database: "employee_trackerDB",
 });
 
@@ -67,7 +67,7 @@ function promptUser() {
     });
 };
 
-//View All Employees (Include Employee Info Including Title, Salary, Manager, Department)
+//View All Employees (Include Employee Info Including Name, Title, Salary, Department, Manager)
 const viewEmployees = () => {
     const query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, role.title AS Title, role.salary AS Salary, department.name AS Department, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id LEFT JOIN employee e on employee.manager_id = e.id";
     connection.query(query, (err, res) => {
@@ -76,4 +76,15 @@ const viewEmployees = () => {
         promptUser();
     });
 };
+
+//View Employees by Role (Include Name and Role)
+const viewRoles = () => {
+    const query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id";
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        promptUser();
+    });
+};
+
 
