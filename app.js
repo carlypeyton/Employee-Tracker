@@ -97,5 +97,11 @@ const viewDepartments = () => {
     });
 };
 
+// End 
+const endApp = () => {
+    connection.end(); 
+};
+
+
 
 
