@@ -28,7 +28,7 @@ VALUE ("Lawyer", 120000, 4);
 INSERT INTO role (title, salary, department_id)
 VALUE ("Paralegal", 70000, 4);
 
--- Employee Seeds
+-- Employee Seeds 
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUE ("Mortimer", "Goth", 1, null);
@@ -44,9 +44,11 @@ INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUE ("Akira", "Kibo", 6, 2);
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUE ("Nancy", "Landgraab", 7, 1);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUE ("Geoffrey", "Landgraab", 8, 1);
 
 -- Select from tables 
 
 SELECT * FROM department;
 SELECT * FROM role;
-SELECT * FROM employee;
+SELECT * FROM employee; 
