@@ -51,10 +51,10 @@ function promptUser() {
             case "View All Employees.":
                 viewEmployees();
                 break;
-            case "View Employees by Role.":
+            case "View All Employees by Role.":
                 viewRoles();
                 break;
-            case "View Employees by Department.":
+            case "View All Employees by Department.":
                 viewDepartments();
                 break;
             case "Update Employee.":
@@ -67,9 +67,32 @@ function promptUser() {
     });
 };
 
-//View All Employees (Include Employee Info Including Name, Title, Salary, Department, Manager)
+//Add Employee
+const addEmployee = () => {
+    inquirer.prompt([
+        {
+            name: "firstname",
+            type: "input",
+            message: "Please Provide Title.",
+        },
+        {
+            name: "lastname",
+            type: "input",
+            message: "Please Provide Salary.",
+        },
+    ]).then(function (answer) {
+        const query = "INSERT INTO employee SET ?";
+        connection.query(query, {first_name: answer.firstname, last_name: answer.lastname}, (err, res) => {
+            if (err) throw err;
+            console.table(res);
+            promptUser();
+        });
+    });
+};
+
+//View All Employees (Include Employee Info Including Name, Title, Salary, Department, Manager. Order by Employee ID.)
 const viewEmployees = () => {
-    const query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, role.title AS Title, role.salary AS Salary, department.name AS Department, CONCAT(e.first_name, ' ' ,e.last_name) AS Manager FROM employee INNER JOIN role on role.id = employee.role_id INNER JOIN department on department.id = role.department_id LEFT JOIN employee e on employee.manager_id = e.id";
+    const query = "SELECT employee.id AS ID, employee.first_name AS First_Name, employee.last_name AS Last_Name, role.title AS Title, department.name AS Department, role.salary AS Salary, CONCAT(manager.first_name, ' ', manager.last_name) AS Manager FROM employee LEFT JOIN employee manager on manager.id = employee.manager_id INNER JOIN role ON (role.id = employee.role_id) INNER JOIN department ON (department.id = role.department_id) ORDER BY employee.id";
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
@@ -77,9 +100,9 @@ const viewEmployees = () => {
     });
 };
 
-//View Employees by Role (Include Name and Role)
+//View Employees by Role (Include Name and Role. Order by Role.)
 const viewRoles = () => {
-    const query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, role.title AS Title FROM employee JOIN role ON employee.role_id = role.id";
+    const query = "SSELECT role.title AS Title, employee.id AS ID, employee.first_name AS First_Name, employee.last_name AS Last_Name, department.name AS Department FROM employee LEFT JOIN role ON (role.id = employee.role_id) LEFT JOIN department ON (department.id = role.department_id) ORDER BY role.title";
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
@@ -89,7 +112,7 @@ const viewRoles = () => {
 
 //View Employees by Department (Include Name and Department. Order by Department)
 const viewDepartments = () => {
-    const query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, department.name AS Department FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY department.id";
+    const query = "SELECT department.name AS Department, role.title AS Title, employee.id AS ID, employee.first_name AS First_Name, employee.last_name AS Last_Name FROM employee LEFT JOIN role ON (role.id = employee.role_id) LEFT JOIN department ON (department.id = role.department_id) ORDER BY department.name";
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
