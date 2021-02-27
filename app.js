@@ -87,4 +87,15 @@ const viewRoles = () => {
     });
 };
 
+//View Employees by Department (Include Name and Department. Order by Department)
+const viewDepartments = () => {
+    const query = "SELECT employee.first_name AS First_Name, employee.last_name AS Last_Name, department.name AS Department FROM employee JOIN role ON employee.role_id = role.id JOIN department ON role.department_id = department.id ORDER BY department.id";
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        promptUser();
+    });
+};
+
+
 
