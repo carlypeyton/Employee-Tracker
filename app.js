@@ -107,6 +107,39 @@ const viewDepartments = () => {
     });
 };
 
+//Add Employee (Include Name, Role ID, and Manager ID)
+const addEmployee = () => {
+    inquirer.prompt([
+        {
+            name: "firstName",
+            type: "input",
+            message: "Please provide employee first name.",
+        },
+        {
+            name: "lastName",
+            type: "input",
+            message: "Please provide employee last name.",
+        },
+        {
+            name: "roleID",
+            type: "input",
+            message: "Please provide employee role ID.",
+        },
+        {
+            name: "managerID",
+            type: "input",
+            message: "Please provide employee manager ID.",
+        }
+    ]).then(function (res) {
+        const query = "INSERT INTO employee SET ?";
+        connection.query(query, { first_name: res.firstName, last_name: res.lastName, manager_id: res.managerID, role_id: res.roleID }, (err, res) => {
+            if (err) throw err;
+            console.table(res);
+            promptUser();
+        });
+    });
+};
+
 //View All Roles (Include Department for each Role)
 const viewAllRoles = () => {
     const query = "SELECT * FROM role LEFT JOIN department ON (department.id = role.department_id)";
