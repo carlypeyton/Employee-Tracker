@@ -140,6 +140,34 @@ const addEmployee = () => {
     });
 };
 
+//Add Role (Include Title, Salary, Department ID)
+const addRole = () => {
+    inquirer.prompt([
+        {
+            name: "newTitle",
+            type: "input",
+            message: "Please provide job title.",
+        },
+        {
+            name: "newSalary",
+            type: "input",
+            message: "Please provide salary.",
+        },
+        {
+            name: "newDepartmentID",
+            type: "input",
+            message: "Please provide department ID.",
+        }
+    ]).then(function (res) {
+        const query = "INSERT INTO role SET ?";
+        connection.query(query, { title: res.newTitle, salary: res.newSalary, department_id: res.newDepartmentID }, (err, res) => {
+            if (err) throw err
+            console.table(res);
+            promptUser();
+        });
+    });
+};
+
 //View All Roles (Include Department for each Role)
 const viewAllRoles = () => {
     const query = "SELECT * FROM role LEFT JOIN department ON (department.id = role.department_id)";
