@@ -168,6 +168,24 @@ const addRole = () => {
     });
 };
 
+//Add Department (Include Department Name)
+const addDepartment = () => {
+    inquirer.prompt([
+        {
+            name: "newDepartment",
+            type: "input",
+            message: "Please provide department name.",
+        }
+    ]).then(function (res) {
+        const query = "INSERT INTO department SET ?";
+        connection.query(query, { name: res.newDepartment }, (err, res) => {
+            if (err) throw err;
+            console.table(res);
+            promptUser();
+        });
+    });
+};
+
 //View All Roles (Include Department for each Role)
 const viewAllRoles = () => {
     const query = "SELECT * FROM role LEFT JOIN department ON (department.id = role.department_id)";
