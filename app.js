@@ -8,7 +8,7 @@ const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: "Leelanau1993!", /////////////Change password and include
+    password: process.env.DB_PASSWORD, 
     database: "employee_trackerDB",
 });
 
@@ -143,21 +143,6 @@ const addEmployee = () => {
 //Add Role (Include Title, Salary, Department ID)
 const addRole = () => {
     inquirer.prompt([
-        {
-            name: "newTitle",
-            type: "input",
-            message: "Please provide job title.",
-        },
-        {
-            name: "newSalary",
-            type: "input",
-            message: "Please provide salary.",
-        },
-        {
-            name: "newDepartmentID",
-            type: "input",
-            message: "Please provide department ID.",
-        }
     ]).then(function (res) {
         const query = "INSERT INTO role SET ?";
         connection.query(query, { title: res.newTitle, salary: res.newSalary, department_id: res.newDepartmentID }, (err, res) => {
@@ -210,8 +195,6 @@ const viewAllDepartments = () => {
 const endApp = () => {
     connection.end();
 };
-
-
 
 
 
