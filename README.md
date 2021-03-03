@@ -12,6 +12,9 @@ So that I can organize and plan my business
 
 ## Deployed Application
 * https://github.com/carlypeyton/Employee-Tracker
+* https://drive.google.com/file/d/1wrW9K_jGR5EC2u7IDFa5GEkWBl7oiTLQ/view
+
+![Application Walkthrough Gif](Assets/Demo.gif)
 
 ## Installation Instructions
 Install the following npm packages prior to deploying application:
