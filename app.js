@@ -260,7 +260,7 @@ const updateEmployeeManager = () => {
         }
     ]).then(function (res) {
         const query = "UPDATE employee SET manager_id=? WHERE first_name= ?";
-        connection.query(query, [res.managerUpdate, res.employeeUpdate], function (err, res) {
+        connection.query(query, [res.managerUpdate, res.employeeUpdate], (err, res) => {
             if (err) throw err;
             console.table(res);
             promptUser();
