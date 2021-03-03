@@ -8,7 +8,7 @@ const connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
     user: "root",
-    password: process.env.DB_PASSWORD, 
+    password: process.env.DB_PASSWORD,
     database: "employee_trackerDB",
 });
 
@@ -28,15 +28,16 @@ function promptUser() {
             type: "list",
             message: "Please select option from below list.",
             choices: [
-                "Add Employee.",
-                "Add Role.",
-                "Add Department.",
-                "Update Employee.",
                 "View All Employees.",
                 "View All Employees by Role.",
                 "View All Employees by Department.",
                 "View All Roles.",
                 "View All Departments.",
+                "Add Employee.",
+                "Add Role.",
+                "Add Department.",
+                "Update Employee Role.",
+                "Update Employee Manager.",
                 "DONE.",
             ]
         }
@@ -52,6 +53,12 @@ function promptUser() {
             case "View All Employees by Department.":
                 viewDepartments();
                 break;
+            case "View All Roles.":
+                viewAllRoles();
+                break;
+            case "View All Departments.":
+                viewAllDepartments();
+                break;
             case "Add Employee.":
                 addEmployee();
                 break;
@@ -61,14 +68,11 @@ function promptUser() {
             case "Add Department.":
                 addDepartment();
                 break;
-            case "Update Employee.":
-                updateEmployee();
+            case "Update Employee Role.":
+                updateEmployeeRole();
                 break;
-            case "View All Roles.":
-                viewAllRoles();
-                break;
-            case "View All Departments.":
-                viewAllDepartments();
+            case "Update Employee Manager.":
+                updateEmployeeManager();
                 break;
             case "DONE.":
                 endApp();
@@ -89,7 +93,7 @@ const viewEmployees = () => {
 
 //View Employees by Role (Include Name and Role. Order by Role.)
 const viewRoles = () => {
-    const query = "SELECT role.title AS Title, employee.id AS ID, employee.first_name AS First_Name, employee.last_name AS Last_Name, department.name AS Department FROM employee LEFT JOIN role ON (role.id = employee.role_id) LEFT JOIN department ON (department.id = role.department_id) ORDER BY role.title";
+    const query = "SELECT role.title AS Title, employee.id AS ID, concat(employee.first_name, ' ' ,  employee.last_name) AS Employee, department.name AS Department FROM employee LEFT JOIN role ON (role.id = employee.role_id) LEFT JOIN department ON (department.id = role.department_id) ORDER BY role.title";
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
@@ -99,7 +103,27 @@ const viewRoles = () => {
 
 //View Employees by Department (Include Name and Department. Order by Department)
 const viewDepartments = () => {
-    const query = "SELECT department.name AS Department, role.title AS Title, employee.id AS ID, employee.first_name AS First_Name, employee.last_name AS Last_Name FROM employee LEFT JOIN role ON (role.id = employee.role_id) LEFT JOIN department ON (department.id = role.department_id) ORDER BY department.name";
+    const query = "SELECT department.name AS Department, role.title AS Title, employee.id AS ID, concat(employee.first_name, ' ' ,  employee.last_name) AS Employee FROM employee LEFT JOIN role ON (role.id = employee.role_id) LEFT JOIN department ON (department.id = role.department_id) ORDER BY department.name";
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        promptUser();
+    });
+};
+
+//View All Roles (Include Department for each Role)
+const viewAllRoles = () => {
+    const query = "SELECT * FROM role LEFT JOIN department ON (department.id = role.department_id)";
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        promptUser();
+    });
+};
+
+//View All Departments
+const viewAllDepartments = () => {
+    const query = "SELECT * FROM department";
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
@@ -143,6 +167,21 @@ const addEmployee = () => {
 //Add Role (Include Title, Salary, Department ID)
 const addRole = () => {
     inquirer.prompt([
+        {
+            name: "newTitle",
+            type: "input",
+            message: "Please provide job title.",
+        },
+        {
+            name: "newSalary",
+            type: "input",
+            message: "Please provide salary.",
+        },
+        {
+            name: "newDepartmentID",
+            type: "input",
+            message: "Please provide department ID.",
+        }
     ]).then(function (res) {
         const query = "INSERT INTO role SET ?";
         connection.query(query, { title: res.newTitle, salary: res.newSalary, department_id: res.newDepartmentID }, (err, res) => {
@@ -171,23 +210,61 @@ const addDepartment = () => {
     });
 };
 
-//View All Roles (Include Department for each Role)
-const viewAllRoles = () => {
-    const query = "SELECT * FROM role LEFT JOIN department ON (department.id = role.department_id)";
+
+
+//Update Employee Role
+const updateEmployeeRole = () => {
+    const query = "SELECT employee.id AS ID, concat(employee.first_name, ' ' ,  employee.last_name) AS Employee, role.title AS Title FROM employee LEFT JOIN role ON (role.id = employee.role_id)";
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
-        promptUser();
+    });
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "Please provide first name of employee to update.",
+            name: "employeeUpdate"
+        },
+        {
+            type: "input",
+            message: "Please provide employee new role ID.",
+            name: "updateRole"
+        }
+    ]).then(function (res) {
+        const query = "UPDATE employee SET role_id=? WHERE first_name= ?";
+        connection.query(query, [res.updateRole, res.employeeUpdate], function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            promptUser();
+        });
     });
 };
 
-//View All Departments
-const viewAllDepartments = () => {
-    const query = "SELECT * FROM department";
+
+const updateEmployeeManager = () => {
+    const query = "SELECT employee.id AS ID, concat(employee.first_name, ' ' ,  employee.last_name) AS Employee, role.title AS Title, department.name AS Department, CONCAT(manager.first_name, ' ', manager.last_name) AS Manager FROM employee LEFT JOIN employee manager on manager.id = employee.manager_id LEFT JOIN role ON (role.id = employee.role_id) LEFT JOIN department ON (department.id = role.department_id) ORDER BY employee.id";
     connection.query(query, (err, res) => {
         if (err) throw err;
         console.table(res);
-        promptUser();
+    });
+    inquirer.prompt([
+        {
+            type: "input",
+            message: "Please provide first name of employee to update.",
+            name: "employeeUpdate"
+        },
+        {
+            type: "input",
+            message: "Please provide new manager ID.",
+            name: "managerUpdate"
+        }
+    ]).then(function (res) {
+        const query = "UPDATE employee SET manager_id=? WHERE first_name= ?";
+        connection.query(query, [res.managerUpdate, res.employeeUpdate], function (err, res) {
+            if (err) throw err;
+            console.table(res);
+            promptUser();
+        });
     });
 };
 
@@ -195,6 +272,42 @@ const viewAllDepartments = () => {
 const endApp = () => {
     connection.end();
 };
+
+
+
+
+//Not Functional********************************
+// //Delete Employee (By ID)
+// const deleteEmployee = () => {
+//     inquirer.prompt([
+//         {
+//             name: "delete",
+//             type: "input",
+//             message: "Please provide ID of employee to delete.",
+//         }
+//     ]).then(function (res) {
+//         const query = "DELETE from employee WHERE id=?";
+//         connection.query(query, { id: res.id }, (err, res) => {
+//             if (err) throw err
+//             console.table(res);
+//             promptUser();
+//         });
+//     });
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
