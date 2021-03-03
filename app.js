@@ -276,27 +276,6 @@ const endApp = () => {
 
 
 
-//Not Functional********************************
-// //Delete Employee (By ID)
-// const deleteEmployee = () => {
-//     inquirer.prompt([
-//         {
-//             name: "delete",
-//             type: "input",
-//             message: "Please provide ID of employee to delete.",
-//         }
-//     ]).then(function (res) {
-//         const query = "DELETE from employee WHERE id=?";
-//         connection.query(query, { id: res.id }, (err, res) => {
-//             if (err) throw err
-//             console.table(res);
-//             promptUser();
-//         });
-//     });
-// };
-
-
-
 
 
 
